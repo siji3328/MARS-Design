@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oligo Sequence Tools</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        label, input, textarea {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Oligo Sequence Tools</h1>
+
+    <!-- 입력 폼 -->
+    <label for="sequence">IUPAC Sequence:</label>
+    <textarea id="sequence">ATGAGYAARGGNGARGARCTNTTYACNGGNGTNGTN...</textarea>
+
+    <label for="oligoLengths">Oligo Lengths (comma-separated):</label>
+    <input type="text" id="oligoLengths" value="89, 89, 89, 89, 89, 89, 89, 89, 89, 82">
+
+    <label for="overlapLengths">Overlap Lengths (comma-separated):</label>
+    <input type="text" id="overlapLengths" value="20, 20, 20, 20, 20, 28, 22, 21, 22">
+
+    <button onclick="generateOligos()">Generate Oligos</button>
+    <button onclick="generateReverseComplement()">Generate Reverse Complement</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        // IUPAC 상보적 코드 테이블 정의
+        const complementaryTable = {
+            "A": "T", "T": "A", "G": "C", "C": "G",
+            "R": "Y", "Y": "R", "S": "S", "W": "W",
+            "K": "M", "M": "K", "B": "V", "D": "H",
+            "H": "D", "V": "B", "N": "N"
+        };
+
+        // 상보적 서열을 생성하는 함수 (reverse complementary)
+        function getReverseComplementarySequence(sequence) {
+            let complementarySequence = "";
+            for (let base of sequence) {
+                complementarySequence += complementaryTable[base] || base;
+            }
+            return complementarySequence.split("").reverse().join("");
+        }
+
+        // 올리고 서열 생성 함수
+        function createOligos(sequence, oligoLengths, overlapLengths) {
+            let oligos = [];
+            let start = 0;
+            for (let i = 0; i < oligoLengths.length; i++) {
+                let end = start + oligoLengths[i];
+                oligos.push(sequence.slice(start, end));
+                if (i < overlapLengths.length) { // 마지막 조각에는 오버랩이 없으므로 조건 추가
+                    start += (oligoLengths[i] - overlapLengths[i]);
+                }
+            }
+            return oligos;
+        }
+
+        // Oligo 생성
+        function generateOligos() {
+            const sequence = document.getElementById("sequence").value;
+            const oligoLengths = document.getElementById("oligoLengths").value.split(",").map(Number);
+            const overlapLengths = document.getElementById("overlapLengths").value.split(",").map(Number);
+
+            const oligos = createOligos(sequence, oligoLengths, overlapLengths);
+
+            let result = "";
+            oligos.forEach((oligo, index) => {
+                result += `Oligo ${index + 1} (길이: ${oligo.length}): ${oligo}\n\n`;
+            });
+
+            document.getElementById("result").innerText = result;
+        }
+
+        // Reverse Complement Oligo 생성
+        function generateReverseComplement() {
+            const sequence = document.getElementById("sequence").value;
+            const oligoLengths = document.getElementById("oligoLengths").value.split(",").map(Number);
+            const overlapLengths = document.getElementById("overlapLengths").value.split(",").map(Number);
+
+            const oligos = createOligos(sequence, oligoLengths, overlapLengths);
+            const reverseComplementOligos = oligos.map(getReverseComplementarySequence);
+
+            let result = "";
+            reverseComplementOligos.forEach((oligo, index) => {
+                result += `Oligo ${index + 1} (Reverse Complementary): ${oligo}\n\n`;
+            });
+
+            document.getElementById("result").innerText = result;
+        }
+    </script>
+</body>
+
+</html>
