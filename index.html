@@ -126,11 +126,11 @@
                 let tm = calculateTm(replacementOverlap);
 
                 if (index % 2 === 0) { // 홀수 인덱스 (1-based, 실제로는 0-based이므로 짝수)
-                    let modifiedOligo = oligo.slice(0, oligo.length - overlapLengths[index]) + replacementOverlap;
+                    let modifiedOligo = replacementOverlap + oligo.slice(overlapLengths[index]);
                     result += `Oligo ${index + 1} (Forward, Tm of overlap: ${tm}°C): ${modifiedOligo}\n\n`;
                 } else { // 짝수 인덱스 (0-based 홀수)
                     const reverseOligo = getReverseComplementarySequence(oligo);
-                    let modifiedReverseOligo = replacementOverlap + reverseOligo.slice(overlapLengths[index]);
+                    let modifiedReverseOligo = reverseOligo.slice(0, reverseOligo.length - overlapLengths[index]) + replacementOverlap;
                     tm = calculateTm(replacementOverlap);
                     result += `Oligo ${index + 1} (Reverse Complementary, Tm of overlap: ${tm}°C): ${modifiedReverseOligo}\n\n`;
                 }
