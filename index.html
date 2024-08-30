@@ -90,6 +90,39 @@
             }
             return oligos;
         }
+        
+        // Generate Oligos 버튼의 기능 구현
+        function generateOligos() {
+            const sequence = document.getElementById("sequence").value;
+            const oligoLengths = document.getElementById("oligoLengths").value.split(",").map(Number);
+            const overlapLengths = document.getElementById("overlapLengths").value.split(",").map(Number);
+
+            const oligos = createOligos(sequence, oligoLengths, overlapLengths);
+
+            let result = "";
+            oligos.forEach((oligo, index) => {
+                result += `Oligo ${index + 1} (길이: ${oligo.length}): ${oligo}\n\n`;
+            });
+
+            document.getElementById("result").innerText = result;
+        }
+
+        // Generate Reverse Complementary 버튼의 기능 구현
+        function generateReverseComplement() {
+            const sequence = document.getElementById("sequence").value;
+            const oligoLengths = document.getElementById("oligoLengths").value.split(",").map(Number);
+            const overlapLengths = document.getElementById("overlapLengths").value.split(",").map(Number);
+
+            const oligos = createOligos(sequence, oligoLengths, overlapLengths);
+            const reverseComplementOligos = oligos.map(getReverseComplementarySequence);
+
+            let result = "";
+            reverseComplementOligos.forEach((oligo, index) => {
+                result += `Oligo ${index + 1} (Reverse Complementary): ${oligo}\n\n`;
+            });
+
+            document.getElementById("result").innerText = result;
+        }
 
         // Tm 계산 함수 (Wallace Rule 사용, overlap 부분만)
         function calculateTm(overlapSequence) {
